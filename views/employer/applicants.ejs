@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Applicants View — Employer sees candidates who applied for a specific job
+  
+  ACCESSIBILITY:
+  - Each applicant is a card with structured information
+  - Status update form uses labeled select
+  - Resume link clearly labeled
+  - Contact info visible
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="employer">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <div class="flex-between mb-lg">
+                    <div>
+                        <h1>Applicants for: <%= job.title %>
+                        </h1>
+                        <p class="text-muted">
+                            <%= applicants.length %> applicant<%= applicants.length !==1 ? 's' : '' %>
+                        </p>
+                    </div>
+                    <a href="/employer/dashboard" class="btn btn-secondary btn-sm">&larr; Dashboard</a>
+                </div>
+                <% if (applicants.length===0) { %>
+                    <div class="card text-center" style="padding: 40px;">
+                        <p class="text-muted">No applications received yet for this position.</p>
+                    </div>
+                    <% } else { %>
+                        <% applicants.forEach(function(app) { %>
+                            <article class="card">
+                                <div class="flex-between">
+                                    <h2 class="card-title" style="margin-bottom: 4px;">
+                                        <%= app.seeker_name %>
+                                    </h2>
+                                    <span class="badge badge-<%= app.status %>">
+                                        <%= app.status %>
+                                    </span>
+                                </div>
+                                <div class="card-meta">
+                                    <span>📧 <a href="mailto:<%= app.seeker_email %>">
+                                            <%= app.seeker_email %>
+                                        </a></span>
+                                    <% if (app.phone) { %><span>📞 <%= app.phone %></span>
+                                        <% } %>
+                                            <% if (app.seeker_location) { %><span>📍 <%= app.seeker_location %></span>
+                                                <% } %>
+                                                    <span>📅 Applied: <%= new Date(app.applied_at).toLocaleDateString()
+                                                            %></span>
+                                                    <% if (app.is_quick_apply) { %><span>⚡ Quick Apply</span>
+                                                        <% } %>
+                                </div>
+                                <% if (app.skills) { %>
+                                    <p><strong>Skills:</strong>
+                                        <%= app.skills %>
+                                    </p>
+                                    <% } %>
+                                        <% if (app.education) { %>
+                                            <p><strong>Education:</strong>
+                                                <%= app.education %>
+                                            </p>
+                                            <% } %>
+                                                <% if (app.bio) { %>
+                                                    <p><strong>About:</strong>
+                                                        <%= app.bio %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% if (app.cover_letter && app.cover_letter
+                                                            !=='Quick Apply — please review my profile for details.' ) {
+                                                            %>
+                                                            <p><strong>Cover Letter:</strong>
+                                                                <%= app.cover_letter %>
+                                                            </p>
+                                                            <% } %>
+                                                                <div class="card-actions">
+                                                                    <% if (app.resume_path) { %>
+                                                                        <a href="<%= app.resume_path.startsWith('/') ? app.resume_path : '/' + app.resume_path %>" target="_blank"
+                                                                            rel="noopener"
+                                                                            class="btn btn-secondary btn-sm">
+                                                                            📄 Download Resume
+                                                                        </a>
+                                                                        <% } %>
+                                                                            <a href="mailto:<%= app.seeker_email %>?subject=Regarding your application for <%= encodeURIComponent(job.title) %>"
+                                                                                class="btn btn-secondary btn-sm">
+                                                                                ✉️ Contact Candidate
+                                                                            </a>
+                                                                            <!-- Status update form -->
+                                                                            <form method="POST"
+                                                                                action="/employer/jobs/<%= job.id %>/applicants/<%= app.id %>/status"
+                                                                                style="display: inline-flex; align-items: center; gap: 8px;">
+                                                                                <label for="status-<%= app.id %>"
+                                                                                    class="sr-only">Update status for
+                                                                                    <%= app.seeker_name %></label>
+                                                                                <select id="status-<%= app.id %>"
+                                                                                    name="status" class="form-input"
+                                                                                    style="width: auto; padding: 8px 12px;">
+                                                                                    <option value="applied"
+                                                                                        <%=app.status==='applied'
+                                                                                        ? 'selected' : '' %>>Applied
+                                                                                    </option>
+                                                                                    <option value="reviewed"
+                                                                                        <%=app.status==='reviewed'
+                                                                                        ? 'selected' : '' %>>Reviewed
+                                                                                    </option>
+                                                                                    <option value="shortlisted"
+                                                                                        <%=app.status==='shortlisted'
+                                                                                        ? 'selected' : '' %>>Shortlisted
+                                                                                    </option>
+                                                                                    <option value="rejected"
+                                                                                        <%=app.status==='rejected'
+                                                                                        ? 'selected' : '' %>>Rejected
+                                                                                    </option>
+                                                                                    <option value="hired"
+                                                                                        <%=app.status==='hired'
+                                                                                        ? 'selected' : '' %>>Hired
+                                                                                    </option>
+                                                                                </select>
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary btn-sm">Update</button>
+                                                                            </form>
+                                                                </div>
+                            </article>
+                            <% }) %>
+                                <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

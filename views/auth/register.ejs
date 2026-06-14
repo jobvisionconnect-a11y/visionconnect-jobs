@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Registration Page
+  
+  ACCESSIBILITY:
+  - Role selection uses radio buttons in a fieldset (keyboard-friendly)
+  - All form fields have explicit labels
+  - Password requirements stated in label hint text
+  - Form validation errors announced via aria-live
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create your free VisionConnect Jobs account as a Job Seeker or Employer">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <div class="auth-wrapper">
+                <%- include('../partials/flash') %>
+                    <h1>Create Your Account</h1>
+                    <p class="text-muted">Join VisionConnect Jobs to find or post inclusive employment opportunities.
+                    </p>
+                    <form method="POST" action="/auth/register" novalidate>
+
+                        <!-- Account Type Selection -->
+                        <fieldset>
+                            <legend>I want to</legend>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="role" value="seeker" required aria-required="true">
+                                    <span class="radio-label">
+                                        <strong>Find a Job</strong> — I'm looking for employment opportunities
+                                    </span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="role" value="employer">
+                                    <span class="radio-label">
+                                        <strong>Hire Talent</strong> — I want to post jobs and find candidates
+                                    </span>
+                                </label>
+                            </div>
+                        </fieldset>
+                        <!-- Personal Information -->
+                        <fieldset>
+                            <legend>Your Information</legend>
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" name="name" class="form-input" required autocomplete="name"
+                                    aria-required="true" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-input" required
+                                    autocomplete="email" aria-required="true" placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">
+                                    Password
+                                    <span class="label-hint">(at least 6 characters)</span>
+                                </label>
+                                <input type="password" id="password" name="password" class="form-input" required
+                                    minlength="6" autocomplete="new-password" aria-required="true"
+                                    aria-describedby="password-hint" placeholder="Create a password">
+                                <span id="password-hint" class="label-hint">Must be at least 6 characters long.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input"
+                                    required autocomplete="new-password" aria-required="true"
+                                    placeholder="Re-enter your password">
+                            </div>
+                        </fieldset>
+                        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                    </form>
+                    <p class="text-center mt-lg">
+                        Already have an account? <a href="/auth/login">Log in here</a>
+                    </p>
+            </div>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

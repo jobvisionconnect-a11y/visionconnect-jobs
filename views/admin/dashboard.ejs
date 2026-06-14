@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="admin">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <h1>Admin Dashboard</h1>
+                <p class="text-muted mb-lg">Platform overview and management tools.</p>
+                <!-- Stats -->
+                <section aria-labelledby="admin-stats">
+                    <h2 id="admin-stats">Platform Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalUsers %>
+                            </span>
+                            <span class="stat-label">Total Users</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalSeekers %>
+                            </span>
+                            <span class="stat-label">Job Seekers</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalEmployers %>
+                            </span>
+                            <span class="stat-label">Employers</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.approvedJobs %>
+                            </span>
+                            <span class="stat-label">Approved Jobs</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" style="color: var(--color-warning);">
+                                <%= stats.pendingJobs %>
+                            </span>
+                            <span class="stat-label">Pending Approval</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalApplications %>
+                            </span>
+                            <span class="stat-label">Applications</span>
+                        </div>
+                    </div>
+                </section>
+                <!-- Quick Actions -->
+                <nav aria-label="Admin quick actions" class="mb-xl">
+                    <a href="/admin/users" class="btn btn-primary" style="margin-right: 8px;">Manage Users</a>
+                    <a href="/admin/jobs" class="btn btn-primary" style="margin-right: 8px;">Manage Jobs</a>
+                    <a href="/admin/jobs?status=pending" class="btn btn-secondary">Pending Jobs (<%= stats.pendingJobs
+                            %>)</a>
+                </nav>
+                <!-- Recent Users -->
+                <section aria-labelledby="recent-users-heading">
+                    <h2 id="recent-users-heading">Recent Registrations</h2>
+                    <table class="data-table" aria-label="Recently registered users">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Joined</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentUsers.forEach(function(u) { %>
+                                <tr>
+                                    <td>
+                                        <%= u.name %>
+                                    </td>
+                                    <td>
+                                        <%= u.email %>
+                                    </td>
+                                    <td>
+                                        <%= u.role %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(u.created_at).toLocaleDateString() %>
+                                    </td>
+                                    <td>
+                                        <span class="badge <%= u.is_approved ? 'badge-active' : 'badge-suspended' %>">
+                                            <%= u.is_approved ? 'Active' : 'Suspended' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </section>
+                <!-- Recent Jobs -->
+                <section aria-labelledby="recent-jobs-heading" class="mt-lg">
+                    <h2 id="recent-jobs-heading">Recent Job Postings</h2>
+                    <table class="data-table" aria-label="Recently posted jobs">
+                        <thead>
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Company</th>
+                                <th scope="col">Posted By</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentJobs.forEach(function(j) { %>
+                                <tr>
+                                    <td>
+                                        <%= j.title %>
+                                    </td>
+                                    <td>
+                                        <%= j.company %>
+                                    </td>
+                                    <td>
+                                        <%= j.employer_name %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(j.created_at).toLocaleDateString() %>
+                                    </td>
+                                    <td>
+                                        <span class="badge <%= j.is_approved ? 'badge-approved' : 'badge-pending' %>">
+                                            <%= j.is_approved ? 'Approved' : 'Pending' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </section>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Job Seeker Dashboard
+  
+  ACCESSIBILITY:
+  - Stats use aria-label for screen reader context
+  - Application table has proper th scope attributes
+  - Status badges include text (not color-only)
+  - Quick links to common actions at top
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="seeker">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <h1>Welcome, <%= user.name %>
+                </h1>
+                <p class="text-muted mb-lg">Here's an overview of your job search activity.</p>
+                <!-- Quick Actions -->
+                <nav aria-label="Quick actions" class="quick-actions mb-xl">
+                    <a href="/jobs" class="btn btn-primary">Browse Jobs</a>
+                    <a href="/seeker/profile" class="btn btn-secondary">Edit Profile</a>
+                    <a href="/seeker/saved-jobs" class="btn btn-secondary">Saved Jobs</a>
+                    <a href="/seeker/applications" class="btn btn-secondary">All Applications</a>
+                </nav>
+                <!-- Stats -->
+                <section aria-labelledby="stats-heading">
+                    <h2 id="stats-heading">Application Summary</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number" aria-label="<%= stats.total %> total applications">
+                                <%= stats.total %>
+                            </span>
+                            <span class="stat-label">Total Applied</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" aria-label="<%= stats.reviewed %> reviewed">
+                                <%= stats.reviewed %>
+                            </span>
+                            <span class="stat-label">Under Review</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" aria-label="<%= stats.shortlisted %> shortlisted">
+                                <%= stats.shortlisted %>
+                            </span>
+                            <span class="stat-label">Shortlisted</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" aria-label="<%= stats.hired %> hired">
+                                <%= stats.hired %>
+                            </span>
+                            <span class="stat-label">Hired</span>
+                        </div>
+                    </div>
+                </section>
+                <!-- Profile completeness check -->
+                <% if (profile && (!profile.skills || !profile.education)) { %>
+                    <div class="flash-message flash-warning" role="status" aria-live="polite"
+                        style="background: var(--color-warning-bg); border-color: var(--color-warning); color: var(--color-warning);">
+                        <span aria-hidden="true">💡</span>
+                        <span>
+                            <strong>Complete your profile!</strong>
+                            Adding skills and education helps employers find you.
+                            <a href="/seeker/profile">Update your profile now</a>.
+                        </span>
+                    </div>
+                    <% } %>
+                        <!-- Recent Applications -->
+                        <section aria-labelledby="recent-heading" class="mt-lg">
+                            <h2 id="recent-heading">Recent Applications</h2>
+                            <% if (applications.length===0) { %>
+                                <div class="card text-center" style="padding: 40px;">
+                                    <p class="text-muted">You haven't applied to any jobs yet.</p>
+                                    <a href="/jobs" class="btn btn-primary mt-lg">Start Browsing Jobs</a>
+                                </div>
+                                <% } else { %>
+                                    <div role="list" aria-label="Your recent applications">
+                                        <% applications.slice(0, 5).forEach(function(app) { %>
+                                            <article class="card" role="listitem">
+                                                <div class="flex-between">
+                                                    <div>
+                                                        <h3 class="card-title">
+                                                            <a href="/jobs/<%= app.job_id %>">
+                                                                <%= app.job_title %>
+                                                            </a>
+                                                        </h3>
+                                                        <div class="card-meta">
+                                                            <span>🏢 <%= app.company %></span>
+                                                            <% if (app.location) { %><span>📍 <%= app.location %></span>
+                                                                <% } %>
+                                                                    <span>📅 Applied: <%= new
+                                                                            Date(app.applied_at).toLocaleDateString() %>
+                                                                            </span>
+                                                                    <% if (app.is_quick_apply) { %><span>⚡ Quick
+                                                                            Apply</span>
+                                                                        <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <span class="badge badge-<%= app.status %>"
+                                                        aria-label="Status: <%= app.status %>">
+                                                        <%= app.status %>
+                                                    </span>
+                                                </div>
+                                            </article>
+                                            <% }) %>
+                                    </div>
+                                    <% if (applications.length> 5) { %>
+                                        <p class="text-center mt-lg">
+                                            <a href="/seeker/applications" class="btn btn-secondary">View all <%=
+                                                    applications.length %> applications</a>
+                                        </p>
+                                        <% } %>
+                                            <% } %>
+                        </section>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Job Detail Page
+  
+  ACCESSIBILITY:
+  - Clear heading hierarchy: h1 for title, h2 for sections
+  - Apply form is within a labeled region
+  - Quick Apply has a clear description of what it does
+  - "Already applied" status is announced
+  - Back link at top for easy navigation
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= job.title %> at <%= job.company %> — Apply now on VisionConnect Jobs">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="<%= user ? user.role : '' %>">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <a href="/jobs" class="back-link">&larr; Back to Job Search</a>
+                <!-- Job Header -->
+                <div class="job-detail-header">
+                    <div>
+                        <h1>
+                            <%= job.title %>
+                        </h1>
+                        <div class="card-meta card-meta-lg">
+                            <span>🏢 <span class="sr-only">Company: </span><strong>
+                                    <%= job.company %>
+                                </strong></span>
+                            <% if (job.location) { %>
+                                <span>📍 <span class="sr-only">Location: </span>
+                                    <%= job.location %>
+                                </span>
+                                <% } %>
+                                    <span>📋 <span class="sr-only">Job Type: </span>
+                                        <%= job.job_type %>
+                                    </span>
+                                    <% if (job.salary_range) { %>
+                                        <span>💰 <span class="sr-only">Salary: </span>
+                                            <%= job.salary_range %>
+                                        </span>
+                                        <% } %>
+                        </div>
+                    </div>
+
+                    <% if (user && user.role === 'seeker') { %>
+                        <form action="/seeker/saved-jobs/toggle" method="POST" class="ajax-toggle-save">
+                            <input type="hidden" name="job_id" value="<%= job.id %>">
+                            <button type="submit" class="btn btn-save <%= isSaved ? 'saved' : '' %>" 
+                                    aria-pressed="<%= isSaved %>"
+                                    aria-label="<%= isSaved ? 'Unsave' : 'Save' %> <%= job.title %>">
+                                <span class="icon"><%= isSaved ? '⭐' : '☆' %></span>
+                                <span class="label"><%= isSaved ? 'Saved' : 'Save' %></span>
+                            </button>
+                        </form>
+                    <% } %>
+                </div>
+
+                <style>
+                    .btn-save {
+                        background: #fff;
+                        border: 1px solid var(--color-primary);
+                        color: var(--color-primary);
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        transition: all 0.2s;
+                    }
+                    .btn-save.saved {
+                        background: var(--color-primary);
+                        color: #fff;
+                    }
+                    .btn-save:hover {
+                        background: #f0f7ff;
+                        transform: translateY(-1px);
+                    }
+                    .btn-save.saved:hover {
+                        background: #0056b3;
+                    }
+                </style>
+
+                <script>
+                    document.querySelector('.ajax-toggle-save')?.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const form = e.target;
+                        const btn = form.querySelector('button');
+                        const icon = btn.querySelector('.icon');
+                        const label = btn.querySelector('.label');
+                        const jobId = form.querySelector('input[name="job_id"]').value;
+
+                        try {
+                            const res = await fetch(form.action, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ job_id: jobId })
+                            });
+                            const data = await res.json();
+                            
+                            if (data.status === 'saved') {
+                                btn.classList.add('saved');
+                                btn.setAttribute('aria-pressed', 'true');
+                                icon.innerText = '⭐';
+                                label.innerText = 'Saved';
+                            } else {
+                                btn.classList.remove('saved');
+                                btn.setAttribute('aria-pressed', 'false');
+                                icon.innerText = '☆';
+                                label.innerText = 'Save';
+                            }
+                        } catch (err) {
+                            console.error('Error toggling save:', err);
+                        }
+                    });
+                </script>
+                <!-- Job Description -->
+                <section class="job-detail-section" aria-labelledby="desc-heading">
+                    <h2 id="desc-heading">Job Description</h2>
+                    <div class="pre-wrap">
+                        <%= job.description %>
+                    </div>
+                </section>
+                <% if (job.requirements) { %>
+                    <section class="job-detail-section" aria-labelledby="req-heading">
+                        <h2 id="req-heading">Requirements</h2>
+                        <div class="pre-wrap">
+                            <%= job.requirements %>
+                        </div>
+                    </section>
+                    <% } %>
+                        <% if (job.accessibility_features) { %>
+                            <section class="job-detail-section" aria-labelledby="access-heading">
+                                <h2 id="access-heading">Workplace Accessibility</h2>
+                                <div class="pre-wrap">
+                                    <%= job.accessibility_features %>
+                                </div>
+                            </section>
+                            <% } %>
+                                <!-- Apply Section -->
+                                <% if (user && user.role==='seeker' ) { %>
+                                    <% if (hasApplied) { %>
+                                        <div class="apply-box" role="status">
+                                            <h2>✓ You've Already Applied</h2>
+                                            <p>You have already submitted an application for this position.
+                                                <a href="/seeker/dashboard">Track your application status on your
+                                                    dashboard</a>.
+                                            </p>
+                                        </div>
+                                        <% } else { %>
+                                            <section class="apply-box" aria-labelledby="apply-heading">
+                                                <h2 id="apply-heading">Apply for This Position</h2>
+                                                <!-- Quick Apply -->
+                                                <div
+                                                    class="applicant-section">
+                                                    <h3>⚡ Quick Apply</h3>
+                                                    <p class="text-muted">Apply instantly using your profile
+                                                        information. No cover letter needed.</p>
+                                                    <form method="POST" action="/jobs/<%= job.id %>/quick-apply">
+                                                        <button type="submit" class="btn btn-primary"
+                                                            data-action="apply">
+                                                            Quick Apply — One Click
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <!-- Standard Apply -->
+                                                <h3>Or write a cover letter</h3>
+                                                <form method="POST" action="/jobs/<%= job.id %>/apply">
+                                                    <div class="form-group">
+                                                        <label for="cover_letter">
+                                                            Cover Letter
+                                                            <span class="label-hint">(optional but recommended)</span>
+                                                        </label>
+                                                        <textarea id="cover_letter" name="cover_letter"
+                                                            class="form-input"
+                                                            placeholder="Tell the employer why you're a great fit for this role..."
+                                                            rows="6"></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-secondary" data-action="apply">
+                                                        Submit Application with Cover Letter
+                                                    </button>
+                                                </form>
+                                            </section>
+                                            <% } %>
+                                                <% } else if (!user) { %>
+                                                    <div class="apply-box">
+                                                        <h2>Interested in this position?</h2>
+                                                        <p><a href="/auth/login">Log in</a> or <a
+                                                                href="/auth/register">create an account</a> to apply.
+                                                        </p>
+                                                    </div>
+                                                    <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="admin">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <div class="flex-between mb-lg">
+                    <h1>Manage Job Listings</h1>
+                    <a href="/admin/dashboard" class="btn btn-secondary btn-sm">&larr; Dashboard</a>
+                </div>
+                <!-- Status filter -->
+                <nav aria-label="Filter jobs by status" class="mb-lg" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="/admin/jobs"
+                        class="btn <%= filterStatus === 'all' ? 'btn-primary' : 'btn-secondary' %> btn-sm">All</a>
+                    <a href="/admin/jobs?status=pending"
+                        class="btn <%= filterStatus === 'pending' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Pending</a>
+                    <a href="/admin/jobs?status=approved"
+                        class="btn <%= filterStatus === 'approved' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Approved</a>
+                </nav>
+                <p class="mb-lg"><strong>
+                        <%= jobs.length %>
+                    </strong> job<%= jobs.length !==1 ? 's' : '' %> found</p>
+                <% if (jobs.length===0) { %>
+                    <div class="card text-center" style="padding: 40px;">
+                        <p class="text-muted">No jobs match this filter.</p>
+                    </div>
+                    <% } else { %>
+                        <% jobs.forEach(function(job) { %>
+                            <article class="card">
+                                <div class="flex-between">
+                                    <div>
+                                        <h2 class="card-title" style="font-size: var(--font-size-lg);">
+                                            <%= job.title %>
+                                        </h2>
+                                        <div class="card-meta">
+                                            <span>🏢 <%= job.company %></span>
+                                            <span>👤 Posted by: <%= job.employer_name %></span>
+                                            <span>📋 <%= job.job_type %></span>
+                                            <% if (job.location) { %><span>📍 <%= job.location %></span>
+                                                <% } %>
+                                                    <span>📅 <%= new Date(job.created_at).toLocaleDateString() %></span>
+                                        </div>
+                                    </div>
+                                    <span class="badge <%= job.is_approved ? 'badge-approved' : 'badge-pending' %>">
+                                        <%= job.is_approved ? 'Approved' : 'Pending' %>
+                                    </span>
+                                </div>
+                                <p class="text-muted" style="margin-top: 8px;">
+                                    <%= job.description.substring(0, 200) %>
+                                        <%= job.description.length> 200 ? '...' : '' %>
+                                </p>
+                                <div class="card-actions">
+                                    <% if (!job.is_approved) { %>
+                                        <form method="POST" action="/admin/jobs/<%= job.id %>/approve"
+                                            style="display:inline;">
+                                            <button type="submit" class="btn btn-primary btn-sm"
+                                                aria-label="Approve job: <%= job.title %>">
+                                                ✓ Approve
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                            <form method="POST" action="/admin/jobs/<%= job.id %>/reject"
+                                                style="display:inline;">
+                                                <button type="submit" class="btn btn-secondary btn-sm"
+                                                    aria-label="Unapprove job: <%= job.title %>">
+                                                    ✕ Unapprove
+                                                </button>
+                                            </form>
+                                            <% } %>
+                                                <form method="POST" action="/admin/jobs/<%= job.id %>/delete"
+                                                    style="display:inline;"
+                                                    onsubmit="return confirm('Are you sure you want to permanently delete this job and all its applications?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                        aria-label="Delete job: <%= job.title %>">
+                                                        🗑 Delete
+                                                    </button>
+                                                </form>
+                                </div>
+                            </article>
+                            <% }) %>
+                                <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

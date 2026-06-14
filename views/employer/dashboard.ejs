@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="employer">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <h1>Employer Dashboard</h1>
+                <p class="text-muted mb-lg">Manage your job listings and review applicants.</p>
+                <!-- Quick Actions -->
+                <nav aria-label="Quick actions" class="mb-xl">
+                    <a href="/employer/jobs/new" class="btn btn-primary">+ Post New Job</a>
+                </nav>
+                <!-- Stats -->
+                <section aria-labelledby="emp-stats-heading">
+                    <h2 id="emp-stats-heading">Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalJobs %>
+                            </span>
+                            <span class="stat-label">Total Jobs Posted</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.activeJobs %>
+                            </span>
+                            <span class="stat-label">Active & Approved</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.pendingApproval %>
+                            </span>
+                            <span class="stat-label">Pending Approval</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">
+                                <%= stats.totalApplications %>
+                            </span>
+                            <span class="stat-label">Total Applications</span>
+                        </div>
+                    </div>
+                </section>
+                <!-- Job Listings -->
+                <section aria-labelledby="emp-jobs-heading">
+                    <h2 id="emp-jobs-heading">Your Job Listings</h2>
+                    <% if (jobs.length===0) { %>
+                        <div class="card text-center card-empty">
+                            <p class="text-muted">You haven't posted any jobs yet.</p>
+                            <a href="/employer/jobs/new" class="btn btn-primary mt-lg">Post Your First Job</a>
+                        </div>
+                        <% } else { %>
+                            <% jobs.forEach(function(job) { %>
+                                <article class="card">
+                                    <div class="flex-between">
+                                        <div>
+                                            <h3 class="card-title">
+                                                <%= job.title %>
+                                            </h3>
+                                            <div class="card-meta">
+                                                <span>🏢 <%= job.company %></span>
+                                                <span>📋 <%= job.job_type %></span>
+                                                <span>👥 <%= job.application_count %> applicant<%= job.application_count
+                                                            !==1 ? 's' : '' %></span>
+                                                <span>📅 Posted: <%= new Date(job.created_at).toLocaleDateString() %>
+                                                        </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-row-gap">
+                                            <% if (!job.is_approved) { %>
+                                                <span class="badge badge-pending">Pending Approval</span>
+                                                <% } else if (job.is_active) { %>
+                                                    <span class="badge badge-active">Active</span>
+                                                    <% } else { %>
+                                                        <span class="badge badge-suspended">Inactive</span>
+                                                        <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="card-actions">
+                                        <a href="/employer/jobs/<%= job.id %>/applicants"
+                                            class="btn btn-primary btn-sm">
+                                            View Applicants (<%= job.application_count %>)
+                                        </a>
+                                        <form method="POST" action="/employer/jobs/<%= job.id %>/toggle"
+                                            class="form-inline">
+                                            <button type="submit" class="btn btn-secondary btn-sm">
+                                                <%= job.is_active ? 'Deactivate' : 'Activate' %>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </article>
+                                <% }) %>
+                                    <% } %>
+                </section>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

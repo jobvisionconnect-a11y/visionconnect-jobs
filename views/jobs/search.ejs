@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Job Search Page
+  
+  ACCESSIBILITY:
+  - Search form uses fieldset with legend
+  - Results count announced via aria-live region
+  - Each job is an <article> with proper heading hierarchy
+  - Filter controls have explicit labels
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search accessible job listings on VisionConnect Jobs">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="<%= user ? user.role : '' %>">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <h1>Find Jobs</h1>
+                <!-- Search & Filters -->
+                <form method="GET" action="/jobs" role="search" aria-label="Job search">
+                    <fieldset class="filter-bar">
+                        <legend class="sr-only">Search filters</legend>
+                        <div class="form-group">
+                            <label for="search-keyword">Keyword</label>
+                            <input type="search" id="search-keyword" name="q" class="form-input"
+                                value="<%= filters.q %>" placeholder="Job title, company, or keyword"
+                                aria-label="Search by keyword">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-type">Job Type</label>
+                            <select id="search-type" name="type" class="form-input">
+                                <option value="all" <%=filters.type==='all' ? 'selected' : '' %>>All Types</option>
+                                <option value="full-time" <%=filters.type==='full-time' ? 'selected' : '' %>>Full Time
+                                </option>
+                                <option value="part-time" <%=filters.type==='part-time' ? 'selected' : '' %>>Part Time
+                                </option>
+                                <option value="internship" <%=filters.type==='internship' ? 'selected' : '' %>
+                                    >Internship</option>
+                                <option value="remote" <%=filters.type==='remote' ? 'selected' : '' %>>Remote</option>
+                                <option value="contract" <%=filters.type==='contract' ? 'selected' : '' %>>Contract
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="search-location">Location</label>
+                            <input type="text" id="search-location" name="location" class="form-input"
+                                value="<%= filters.location %>" placeholder="City or region">
+                        </div>
+                        <div class="form-group">
+                            <label class="sr-only" for="search-submit">Search</label>
+                            <button type="submit" id="search-submit" class="btn btn-primary">Search Jobs</button>
+                        </div>
+                    </fieldset>
+                </form>
+                <!-- Results count — announced to screen readers -->
+                <div aria-live="polite" aria-atomic="true" class="mb-lg">
+                    <p><strong>
+                            <%= resultCount %>
+                        </strong> job<%= resultCount !==1 ? 's' : '' %> found
+                            <% if (filters.q) { %> for "<%= filters.q %>"<% } %>
+                    </p>
+                </div>
+                <!-- Job Listings -->
+                <% if (jobs.length===0) { %>
+                    <div class="card text-center card-empty">
+                        <h2>No jobs found</h2>
+                        <p class="text-muted">Try adjusting your search filters or browse all available positions.</p>
+                        <a href="/jobs" class="btn btn-secondary mt-lg">Clear Filters</a>
+                    </div>
+                    <% } else { %>
+                        <div class="job-grid" role="list" aria-label="Job listings">
+                            <% jobs.forEach(function(job) { %>
+                                <article class="card" role="listitem">
+                                    <h2 class="card-title">
+                                        <a href="/jobs/<%= job.id %>">
+                                            <%= job.title %>
+                                        </a>
+                                    </h2>
+                                    <div class="card-meta">
+                                        <span>🏢 <span class="sr-only">Company: </span>
+                                            <%= job.company %>
+                                        </span>
+                                        <% if (job.location) { %>
+                                            <span>📍 <span class="sr-only">Location: </span>
+                                                <%= job.location %>
+                                            </span>
+                                            <% } %>
+                                                <span>📋 <span class="sr-only">Type: </span>
+                                                    <%= job.job_type %>
+                                                </span>
+                                                <% if (job.salary_range) { %>
+                                                    <span>💰 <span class="sr-only">Salary: </span>
+                                                        <%= job.salary_range %>
+                                                    </span>
+                                                    <% } %>
+                                    </div>
+                                    <p class="text-muted">
+                                        <%= job.description.substring(0, 180) %>
+                                            <%= job.description.length> 180 ? '...' : '' %>
+                                    </p>
+                                    <div class="card-actions">
+                                        <a href="/jobs/<%= job.id %>" class="btn btn-primary btn-sm">View Details</a>
+                                        
+                                        <% if (user && user.role === 'seeker') { %>
+                                            <form action="/seeker/saved-jobs/toggle" method="POST" class="ajax-toggle-save">
+                                                <input type="hidden" name="job_id" value="<%= job.id %>">
+                                                <button type="submit" class="btn btn-sm btn-save <%= job.is_saved ? 'saved' : '' %>" 
+                                                        aria-pressed="<%= job.is_saved %>"
+                                                        aria-label="<%= job.is_saved ? 'Unsave' : 'Save' %> <%= job.title %>">
+                                                    <span class="icon"><%= job.is_saved ? '⭐' : '☆' %></span>
+                                                    <span class="label"><%= job.is_saved ? 'Saved' : 'Save' %></span>
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </article>
+                                <% }) %>
+                        </div>
+                        <style>
+                            .btn-save {
+                                background: #fff;
+                                border: 1px solid var(--color-primary);
+                                color: var(--color-primary);
+                                display: flex;
+                                align-items: center;
+                                gap: 4px;
+                            }
+                            .btn-save.saved {
+                                background: var(--color-primary);
+                                color: #fff;
+                            }
+                            .btn-save:hover {
+                                background: #f0f7ff;
+                            }
+                            .btn-save.saved:hover {
+                                background: #0056b3;
+                            }
+                        </style>
+                        <script>
+                            document.querySelectorAll('.ajax-toggle-save').forEach(form => {
+                                form.addEventListener('submit', async (e) => {
+                                    e.preventDefault();
+                                    const btn = form.querySelector('button');
+                                    const icon = btn.querySelector('.icon');
+                                    const label = btn.querySelector('.label');
+                                    const jobId = form.querySelector('input[name="job_id"]').value;
+
+                                    try {
+                                        const res = await fetch(form.action, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ job_id: jobId })
+                                        });
+                                        const data = await res.json();
+                                        
+                                        if (data.status === 'saved') {
+                                            btn.classList.add('saved');
+                                            btn.setAttribute('aria-pressed', 'true');
+                                            btn.setAttribute('aria-label', `Unsave ${label.parentElement.parentElement.parentElement.querySelector('.card-title').innerText}`);
+                                            icon.innerText = '⭐';
+                                            label.innerText = 'Saved';
+                                        } else {
+                                            btn.classList.remove('saved');
+                                            btn.setAttribute('aria-pressed', 'false');
+                                            btn.setAttribute('aria-label', `Save ${label.parentElement.parentElement.parentElement.querySelector('.card-title').innerText}`);
+                                            icon.innerText = '☆';
+                                            label.innerText = 'Save';
+                                        }
+                                    } catch (err) {
+                                        console.error('Error toggling save:', err);
+                                    }
+                                });
+                            });
+                        </script>
+                        <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

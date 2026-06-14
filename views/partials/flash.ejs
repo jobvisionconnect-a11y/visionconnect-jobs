@@ -1,0 +1,25 @@
+<!--
+  Flash Messages Partial — Shown after redirects
+  
+  ACCESSIBILITY:
+  - Uses aria-live="assertive" for error messages (announced immediately)
+  - Uses aria-live="polite" for success messages (announced after current speech)
+  - Uses role="alert" for critical messages
+  - Clear text labels — never color-only indicators
+-->
+<% if (success) { %>
+    <div class="flash-message flash-success" role="status" aria-live="polite">
+        <span aria-hidden="true">✓</span>
+        <span>
+            <%= success %>
+        </span>
+    </div>
+    <% } %>
+        <% if (error) { %>
+            <div class="flash-message flash-error" role="alert" aria-live="assertive">
+                <span aria-hidden="true">⚠</span>
+                <span>
+                    <%= error %>
+                </span>
+            </div>
+            <% } %>

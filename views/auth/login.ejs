@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Login Page
+  
+  ACCESSIBILITY:
+  - Form fields have explicit <label> elements
+  - Error messages announced via aria-live (in flash partial)
+  - Submit button has descriptive text
+  - Link to register is clearly worded
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Log in to your VisionConnect Jobs account">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <div class="auth-wrapper">
+                <%- include('../partials/flash') %>
+                    <h1>Log In to Your Account</h1>
+                    <p class="text-muted">Enter your email and password to access your dashboard.</p>
+                    <form method="POST" action="/auth/login" novalidate>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-input" required autocomplete="email"
+                                aria-required="true" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" required
+                                autocomplete="current-password" aria-required="true" placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                    </form>
+                    <p class="text-center mt-lg">
+                        Don't have an account? <a href="/auth/register">Create a free account</a>
+                    </p>
+            </div>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

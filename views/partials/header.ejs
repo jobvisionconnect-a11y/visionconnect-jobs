@@ -1,0 +1,69 @@
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header" role="banner">
+    <div class="header-inner">
+        <!-- Logo -->
+        <a href="/" class="site-logo" aria-label="VisionConnect Jobs — Home">
+            <span class="logo-icon" aria-hidden="true">👁</span>
+            Vision<span class="logo-accent">Connect</span>
+        </a>
+
+        <!-- Desktop Nav (hidden on mobile via CSS) -->
+        <nav class="main-nav desktop-nav" aria-label="Main navigation">
+            <% if (!user || user.role === 'seeker') { %>
+                <a href="/jobs" <%= (typeof title !== 'undefined' && title.includes('Find Jobs')) ? 'aria-current="page"' : '' %>>Find Jobs</a>
+            <% } %>
+            <% if (user) { %>
+                <% if (user.role === 'seeker') { %>
+                    <a href="/seeker/dashboard" <%= (typeof title !== 'undefined' && title.includes('Dashboard')) ? 'aria-current="page"' : '' %>>Dashboard</a>
+                    <a href="/seeker/applications">Applications</a>
+                    <a href="/seeker/saved-jobs" <%= (typeof title !== 'undefined' && title.includes('Saved')) ? 'aria-current="page"' : '' %>>Saved</a>
+                    <a href="/seeker/profile" <%= (typeof title !== 'undefined' && title.includes('Profile')) ? 'aria-current="page"' : '' %>>Profile</a>
+                <% } else if (user.role === 'employer') { %>
+                    <a href="/employer/dashboard" <%= (typeof title !== 'undefined' && title.includes('Employer')) ? 'aria-current="page"' : '' %>>Dashboard</a>
+                    <a href="/employer/jobs/new">Post Job</a>
+                <% } else if (user.role === 'admin') { %>
+                    <a href="/admin/dashboard">Admin Panel</a>
+                <% } %>
+                <a href="/auth/logout" class="nav-logout">Log Out</a>
+            <% } %>
+        </nav>
+
+        <!-- Header Right: Search + Auth buttons (logged-out, desktop only) -->
+        <div class="header-right">
+            <% if (!user) { %>
+                <a href="/jobs" class="btn btn-header-search btn-sm" aria-label="Search jobs">
+                    <span aria-hidden="true">🔍</span> Search
+                </a>
+                <a href="/auth/login" class="btn btn-outline-white btn-sm">Log In</a>
+                <a href="/auth/register" class="btn btn-white btn-sm">Sign Up</a>
+            <% } %>
+        </div>
+    </div>
+</header>
+
+<!-- ── Mobile Nav Strip — visible on mobile ONLY ── -->
+<% if (!user) { %>
+<nav class="mobile-nav-strip" aria-label="Main navigation">
+    <a href="/jobs" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Find Jobs')) ? 'active' : '' %>">🔍 Search Jobs</a>
+    <a href="/auth/login" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Login')) ? 'active' : '' %>">🔑 Log In</a>
+    <a href="/auth/register" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Register')) ? 'active' : '' %>">✨ Sign Up</a>
+</nav>
+<% } %>
+<% if (user) { %>
+<nav class="mobile-nav-strip" aria-label="Main navigation">
+    <% if (user.role === 'seeker') { %>
+        <a href="/jobs" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Find Jobs')) ? 'active' : '' %>">🔍 Jobs</a>
+        <a href="/seeker/dashboard" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Dashboard')) ? 'active' : '' %>">📊 Dashboard</a>
+        <a href="/seeker/applications" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Applications')) ? 'active' : '' %>">📋 Applied</a>
+        <a href="/auth/logout" class="mobile-nav-item mobile-nav-logout">🚪 Log Out</a>
+    <% } else if (user.role === 'employer') { %>
+        <a href="/employer/dashboard" class="mobile-nav-item <%= (typeof title !== 'undefined' && title.includes('Employer')) ? 'active' : '' %>">📊 Dashboard</a>
+        <a href="/employer/jobs/new" class="mobile-nav-item">➕ Post Job</a>
+        <a href="/auth/logout" class="mobile-nav-item mobile-nav-logout">🚪 Log Out</a>
+    <% } else if (user.role === 'admin') { %>
+        <a href="/admin/dashboard" class="mobile-nav-item">⚙️ Admin</a>
+        <a href="/auth/logout" class="mobile-nav-item mobile-nav-logout">🚪 Log Out</a>
+    <% } %>
+</nav>
+<% } %>

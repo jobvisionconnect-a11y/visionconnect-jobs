@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  VisionConnect Jobs — Landing Page
+  
+  ACCESSIBILITY:
+  - Single h1, proper heading hierarchy
+  - Semantic HTML: header, main, section, footer
+  - All interactive elements keyboard-accessible
+  - Feature grid uses headings for each card
+  - Latest jobs section uses article elements
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="VisionConnect Jobs — An accessible job portal designed for visually impaired and specially-abled users. Find inclusive employment opportunities.">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="<%= user ? user.role : '' %>">
+    <%- include('partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('partials/flash') %>
+                <!-- Hero Section -->
+                <section class="hero" aria-labelledby="hero-heading">
+                    <h1 id="hero-heading">Employment Without Barriers</h1>
+                    <p>
+                        VisionConnect Jobs is an accessible job portal designed for visually impaired
+                        and specially-abled individuals. Find inclusive employers who value your talent.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="/jobs" class="btn btn-primary">Browse Jobs</a>
+                        <a href="/auth/register" class="btn btn-secondary">Create Free Account</a>
+                    </div>
+                </section>
+
+                <!-- Features -->
+                <section aria-labelledby="features-heading" class="mb-xl">
+                    <h2 id="features-heading" class="text-center">Built for Accessibility</h2>
+                    <p class="text-center text-muted mb-lg">
+                        Every feature is designed with screen readers, keyboard navigation, and visual accessibility in
+                        mind.
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">🎤</span>
+                            <h3>Voice Navigation</h3>
+                            <p>Navigate the entire portal using voice commands. Say "go to jobs" or "apply" to take
+                                action hands-free.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">⚡</span>
+                            <h3>Quick Apply</h3>
+                            <p>Apply to jobs with a single click using your profile. No lengthy forms — just one button.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">🔍</span>
+                            <h3>Accessible Search</h3>
+                            <p>Find jobs by keyword, type, and location. Results are screen reader-friendly with clear
+                                structure.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">🎨</span>
+                            <h3>Visual Settings</h3>
+                            <p>Toggle high contrast mode, increase font sizes, and reduce animations — your preferences
+                                are saved.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">⌨️</span>
+                            <h3>Keyboard First</h3>
+                            <p>Every feature works with keyboard-only navigation. Tab through the entire app without a
+                                mouse.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="feature-icon" aria-hidden="true">♿</span>
+                            <h3>Inclusive Employers</h3>
+                            <p>Employers can highlight workplace accessibility features, helping you find the right fit.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <!-- Latest Jobs -->
+                <% if (latestJobs.length> 0) { %>
+                    <section aria-labelledby="latest-heading">
+                        <div class="flex-between mb-lg">
+                            <h2 id="latest-heading">Latest Job Openings</h2>
+                            <a href="/jobs" class="btn btn-secondary btn-sm">View All Jobs</a>
+                        </div>
+                        <div class="job-grid">
+                            <% latestJobs.forEach(function(job) { %>
+                                <article class="card">
+                                    <h3 class="card-title">
+                                        <a href="/jobs/<%= job.id %>">
+                                            <%= job.title %>
+                                        </a>
+                                    </h3>
+                                    <div class="card-meta">
+                                        <span>🏢 <%= job.company %></span>
+                                        <% if (job.location) { %><span>📍 <%= job.location %></span>
+                                            <% } %>
+                                                <span>📋 <%= job.job_type %></span>
+                                    </div>
+                                    <p class="text-muted">
+                                        <%= job.description.substring(0, 150) %>
+                                            <%= job.description.length> 150 ? '...' : '' %>
+                                    </p>
+                                    <div class="card-actions">
+                                        <a href="/jobs/<%= job.id %>" class="btn btn-primary btn-sm">View Details</a>
+                                    </div>
+                                </article>
+                                <% }) %>
+                        </div>
+                    </section>
+                    <% } %>
+        </main>
+        <%- include('partials/footer') %>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

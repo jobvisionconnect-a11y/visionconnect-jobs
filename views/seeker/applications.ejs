@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="seeker">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <div class="flex-between mb-lg">
+                    <h1>My Applications</h1>
+                    <a href="/seeker/dashboard" class="btn btn-secondary btn-sm">&larr; Dashboard</a>
+                </div>
+                <% if (applications.length===0) { %>
+                    <div class="card text-center" style="padding: 40px;">
+                        <p class="text-muted">No applications yet.</p>
+                        <a href="/jobs" class="btn btn-primary mt-lg">Find Jobs</a>
+                    </div>
+                    <% } else { %>
+                        <table class="data-table" aria-label="Your job applications">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Job Title</th>
+                                    <th scope="col">Company</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Applied On</th>
+                                    <th scope="col">Method</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% applications.forEach(function(app) { %>
+                                    <tr>
+                                        <td><a href="/jobs/<%= app.job_id %>">
+                                                <%= app.job_title %>
+                                            </a></td>
+                                        <td>
+                                            <%= app.company %>
+                                        </td>
+                                        <td>
+                                            <%= app.job_type %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(app.applied_at).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <%= app.is_quick_apply ? '⚡ Quick' : '📝 Standard' %>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-<%= app.status %>"
+                                                aria-label="Status: <%= app.status %>">
+                                                <%= app.status %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

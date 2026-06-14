@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Post New Job Page
+  
+  ACCESSIBILITY:
+  - Form uses fieldsets for logical grouping
+  - Accessibility features field helps employers describe workplace accommodations
+  - All inputs clearly labeled with hints
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="employer">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <div class="flex-between mb-lg">
+                    <h1>Post a New Job</h1>
+                    <a href="/employer/dashboard" class="btn btn-secondary btn-sm">&larr; Dashboard</a>
+                </div>
+                <form method="POST" action="/employer/jobs/new" novalidate style="max-width: 700px;">
+                    <fieldset>
+                        <legend>Job Details</legend>
+                        <div class="form-group">
+                            <label for="title">Job Title <span class="label-hint">(required)</span></label>
+                            <input type="text" id="title" name="title" class="form-input" required aria-required="true"
+                                placeholder="e.g., Data Entry Specialist">
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company Name <span class="label-hint">(required)</span></label>
+                            <input type="text" id="company" name="company" class="form-input" required
+                                aria-required="true" placeholder="e.g., TechCorp India">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location <span class="label-hint">(optional)</span></label>
+                            <input type="text" id="location" name="location" class="form-input"
+                                placeholder="e.g., Remote, Mumbai, Bangalore">
+                        </div>
+                        <div class="form-group">
+                            <label for="job_type">Job Type</label>
+                            <select id="job_type" name="job_type" class="form-input">
+                                <option value="full-time">Full Time</option>
+                                <option value="part-time">Part Time</option>
+                                <option value="internship">Internship</option>
+                                <option value="remote">Remote</option>
+                                <option value="contract">Contract</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="salary_range">Salary Range <span class="label-hint">(optional)</span></label>
+                            <input type="text" id="salary_range" name="salary_range" class="form-input"
+                                placeholder="e.g., ₹3,00,000 - ₹5,00,000 per year">
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Description & Requirements</legend>
+                        <div class="form-group">
+                            <label for="description">
+                                Job Description <span class="label-hint">(required, at least 20 characters)</span>
+                            </label>
+                            <textarea id="description" name="description" class="form-input" required
+                                aria-required="true" rows="6"
+                                placeholder="Describe the role, responsibilities, and what the ideal candidate looks like..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="requirements">Requirements <span class="label-hint">(optional)</span></label>
+                            <textarea id="requirements" name="requirements" class="form-input" rows="4"
+                                placeholder="List required skills, qualifications, or experience..."></textarea>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Workplace Accessibility</legend>
+                        <p class="text-muted" style="margin-bottom: 16px;">
+                            Help candidates understand what accessibility accommodations your workplace offers.
+                            This is highly valued by job seekers on VisionConnect.
+                        </p>
+                        <div class="form-group">
+                            <label for="accessibility_features">
+                                Accessibility Features
+                                <span class="label-hint">(e.g., screen reader-friendly tools, wheelchair access,
+                                    flexible hours)</span>
+                            </label>
+                            <textarea id="accessibility_features" name="accessibility_features" class="form-input"
+                                rows="4"
+                                placeholder="e.g., We provide screen reader software, adjustable desks, remote work options, and a dedicated accessibility coordinator..."></textarea>
+                        </div>
+                    </fieldset>
+                    <div class="flash-message"
+                        style="background: var(--color-info-bg); border-color: var(--color-info); color: var(--color-info);"
+                        role="note">
+                        <span aria-hidden="true">ℹ️</span>
+                        <span>Your job listing will be reviewed by an admin before it becomes visible to job
+                            seekers.</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-lg">Submit Job for Review</button>
+                </form>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

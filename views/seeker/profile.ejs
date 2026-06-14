@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Job Seeker Profile Page
+  
+  ACCESSIBILITY:
+  - Form uses fieldsets to group related information
+  - disability_type is clearly marked as optional
+  - Resume upload has clear file type instructions
+  - All inputs have explicit labels
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="seeker">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <h1>My Profile</h1>
+                <p class="text-muted mb-lg">
+                    Keep your profile updated so employers can learn about your skills and experience.
+                    Your profile is shared when you use Quick Apply.
+                </p>
+                <form method="POST" action="/seeker/profile" enctype="multipart/form-data" novalidate>
+                    <!-- Personal Info -->
+                    <fieldset>
+                        <legend>Personal Information</legend>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-input" value="<%= user.name %>"
+                                required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="label-hint">(optional)</span></label>
+                            <input type="tel" id="phone" name="phone" class="form-input"
+                                value="<%= profile.phone || '' %>" autocomplete="tel">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location <span class="label-hint">(city, state)</span></label>
+                            <input type="text" id="location" name="location" class="form-input"
+                                value="<%= profile.location || '' %>" placeholder="e.g., Mumbai, Maharashtra">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">About Me <span class="label-hint">(brief introduction)</span></label>
+                            <textarea id="bio" name="bio" class="form-input" rows="4"
+                                placeholder="Tell employers a bit about yourself..."><%= profile.bio || '' %></textarea>
+                        </div>
+                    </fieldset>
+                    <!-- Skills & Education -->
+                    <fieldset>
+                        <legend>Skills & Education</legend>
+                        <div class="form-group">
+                            <label for="skills">
+                                Skills
+                                <span class="label-hint">(separate with commas, e.g., Python, Data Entry,
+                                    Communication)</span>
+                            </label>
+                            <input type="text" id="skills" name="skills" class="form-input"
+                                value="<%= profile.skills || '' %>"
+                                placeholder="e.g., Python, Data Entry, Communication">
+                        </div>
+                        <div class="form-group">
+                            <label for="education">Education</label>
+                            <textarea id="education" name="education" class="form-input" rows="3"
+                                placeholder="e.g., Bachelor's in Computer Science, XYZ University, 2024"><%= profile.education || '' %></textarea>
+                        </div>
+                    </fieldset>
+                    <!-- Accessibility & Disability (Optional) -->
+                    <fieldset>
+                        <legend>Accessibility Information (Optional)</legend>
+                        <p class="text-muted" style="margin-bottom: 16px;">
+                            This information is entirely optional. Sharing it helps employers provide
+                            appropriate accommodations, but you are never required to disclose.
+                        </p>
+                        <div class="form-group">
+                            <label for="disability_type">
+                                Disability Type
+                                <span class="label-hint">(optional — you control what you share)</span>
+                            </label>
+                            <select id="disability_type" name="disability_type" class="form-input">
+                                <option value="">Prefer not to say</option>
+                                <option value="visual" <%=profile.disability_type==='visual' ? 'selected' : '' %>>Visual
+                                    Impairment</option>
+                                <option value="hearing" <%=profile.disability_type==='hearing' ? 'selected' : '' %>
+                                    >Hearing Impairment</option>
+                                <option value="mobility" <%=profile.disability_type==='mobility' ? 'selected' : '' %>
+                                    >Mobility Disability</option>
+                                <option value="cognitive" <%=profile.disability_type==='cognitive' ? 'selected' : '' %>
+                                    >Cognitive / Learning</option>
+                                <option value="speech" <%=profile.disability_type==='speech' ? 'selected' : '' %>>Speech
+                                    Disability</option>
+                                <option value="multiple" <%=profile.disability_type==='multiple' ? 'selected' : '' %>
+                                    >Multiple Disabilities</option>
+                                <option value="other" <%=profile.disability_type==='other' ? 'selected' : '' %>>Other
+                                </option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <!-- Resume Upload -->
+                    <fieldset>
+                        <legend>Resume</legend>
+                        <% if (profile.resume_path) { %>
+                            <p class="mb-lg">
+                                ✓ Current resume:
+                                <a href="<%= profile.resume_path.startsWith('/') ? profile.resume_path : '/' + profile.resume_path %>" target="_blank" rel="noopener">
+                                    Download your resume
+                                </a>
+                            </p>
+                            <% } %>
+                                <div class="form-group">
+                                    <label for="resume">
+                                        Upload Resume
+                                        <span class="label-hint">(PDF, DOC, DOCX, or TXT — max 5MB)</span>
+                                    </label>
+                                    <input type="file" id="resume" name="resume" class="form-input"
+                                        accept=".pdf,.doc,.docx,.txt" aria-describedby="resume-help">
+                                    <span id="resume-help" class="label-hint">
+                                        Accepted formats: PDF, DOC, DOCX, TXT. Maximum file size: 5MB.
+                                    </span>
+                                </div>
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
+                </form>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+            <script src="/js/voice-nav.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body data-user-role="<%= user ? user.role : '' %>">
+    <%- include('partials/header') %>
+        <main id="main-content" role="main">
+            <div style="text-align:center; padding: 80px 20px;">
+                <h1>Error <%= code %>
+                </h1>
+                <p style="font-size: var(--font-size-lg); margin: 24px 0;">
+                    <%= message %>
+                </p>
+                <a href="/" class="btn btn-primary">Go to Home Page</a>
+                <a href="/jobs" class="btn btn-secondary" style="margin-left: 12px;">Browse Jobs</a>
+            </div>
+        </main>
+        <%- include('partials/footer') %>
+            <script src="/js/accessibility.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .saved-job-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            transition: transform 0.2s;
+        }
+        .saved-job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .remove-btn {
+            background: none;
+            border: 1px solid var(--color-error);
+            color: var(--color-error);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .remove-btn:hover {
+            background: var(--color-error);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body data-user-role="seeker">
+    <%- include('../partials/header') %>
+        <main id="main-content" role="main">
+            <%- include('../partials/flash') %>
+                <div class="flex-between mb-lg">
+                    <h1>Saved Jobs</h1>
+                    <a href="/seeker/dashboard" class="btn btn-secondary btn-sm">&larr; Dashboard</a>
+                </div>
+
+                <% if (jobs.length === 0) { %>
+                    <div class="card text-center" style="padding: 40px;">
+                        <p class="text-muted">You haven't saved any jobs yet.</p>
+                        <a href="/jobs" class="btn btn-primary mt-lg">Browse Listings</a>
+                    </div>
+                <% } else { %>
+                    <div role="list" aria-label="Your saved job listings">
+                        <% jobs.forEach(function(job) { %>
+                            <article class="saved-job-card" role="listitem" id="job-card-<%= job.id %>">
+                                <div>
+                                    <h2 class="card-title" style="margin-bottom: 5px;">
+                                        <a href="/jobs/<%= job.id %>"><%= job.title %></a>
+                                    </h2>
+                                    <div class="card-meta">
+                                        <span>🏢 <%= job.company %></span>
+                                        <% if (job.location) { %><span>📍 <%= job.location %></span><% } %>
+                                        <span>💼 <%= job.job_type %></span>
+                                    </div>
+                                    <p class="text-muted mt-sm" style="font-size: 0.9rem; max-width: 600px;">
+                                        <%= job.description.substring(0, 120) %>...
+                                    </p>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                                    <a href="/jobs/<%= job.id %>" class="btn btn-primary btn-sm">View Details</a>
+                                    <form action="/seeker/saved-jobs/toggle" method="POST" class="ajax-toggle-save">
+                                        <input type="hidden" name="job_id" value="<%= job.id %>">
+                                        <button type="submit" class="remove-btn" aria-label="Remove <%= job.title %> from saved jobs">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        <% }) %>
+                    </div>
+                <% } %>
+        </main>
+        <%- include('../partials/footer') %>
+
+        <script src="/js/accessibility.js"></script>
+        <script>
+            // Simple AJAX for removing from list
+            document.querySelectorAll('.ajax-toggle-save').forEach(form => {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const jobId = form.querySelector('input[name="job_id"]').value;
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ job_id: jobId })
+                        });
+                        const data = await res.json();
+                        if (data.status === 'removed') {
+                            const card = document.getElementById(`job-card-${jobId}`);
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                card.remove();
+                                if (document.querySelectorAll('.saved-job-card').length === 0) {
+                                    location.reload(); // Show empty state
+                                }
+                            }, 300);
+                        }
+                    } catch (err) {
+                        console.error('Error removing job:', err);
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>
